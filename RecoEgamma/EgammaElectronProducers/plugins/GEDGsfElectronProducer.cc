@@ -18,7 +18,7 @@
 #include "DataFormats/TrackCandidate/interface/TrackCandidateCollection.h"
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHitFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
-#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
 #include "RecoParticleFlow/PFProducer/interface/GsfElectronEqual.h"
@@ -31,7 +31,7 @@ using namespace reco;
 GEDGsfElectronProducer::GEDGsfElectronProducer( const edm::ParameterSet & cfg )
  : GsfElectronBaseProducer(cfg)
  {
-   egmPFCandidateCollection_ = cfg.getParameter<edm::InputTag>("egmPFCandidatesTag");
+   egmPFCandidateCollection_ = consumes<edm::View<reco::PFCandidate> > (cfg.getParameter<edm::InputTag>("egmPFCandidatesTag"));
    outputValueMapLabel_ = cfg.getParameter<std::string>("outputEGMPFValueMap");
    
    produces<edm::ValueMap<reco::GsfElectronRef> >(outputValueMapLabel_);
@@ -61,19 +61,18 @@ void GEDGsfElectronProducer::produce( edm::Event & event, const edm::EventSetup 
 void GEDGsfElectronProducer::matchWithPFCandidates(edm::Event & event, edm::ValueMap<reco::GsfElectronRef>::Filler & filler)
 {
   // Read the collection of PFCandidates
-  edm::Handle<reco::PFCandidateCollection> pfCandidates;
+  edm::Handle<edm::View<reco::PFCandidate> > pfCandidates;
   
-  bool found = event.getByLabel(egmPFCandidateCollection_, pfCandidates);
+  bool found = event.getByToken(egmPFCandidateCollection_, pfCandidates);
   if(!found) {
     std::ostringstream  err;
-    err<<" cannot get PFCandidates: "
-       <<egmPFCandidateCollection_<<std::endl;
+    err<<" cannot get PFCandidates: " <<std::endl;
     edm::LogError("GEDGsfElectronProducer")<<err.str();
   }
 
   //Loop over the collection of PFFCandidates
-  reco::PFCandidateCollection::const_iterator it = pfCandidates->begin();
-  reco::PFCandidateCollection::const_iterator itend = pfCandidates->end() ;
+  edm::View<reco::PFCandidate>::const_iterator it = pfCandidates->begin();
+  edm::View<reco::PFCandidate>::const_iterator itend = pfCandidates->end() ;
   std::vector<reco::GsfElectronRef> values;
 
   for ( ; it != itend ; ++it) {
