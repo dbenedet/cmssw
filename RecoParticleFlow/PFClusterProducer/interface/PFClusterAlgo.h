@@ -53,7 +53,6 @@ namespace edm {
 class PFClusterAlgo {
 
  public:
-
   typedef edm::StrictWeakOrdering<reco::PFRecHit> PFStrictWeakOrdering;
   typedef edm::SortedCollection<reco::PFRecHit> SortedPFRecHitCollection;
 
@@ -61,7 +60,7 @@ class PFClusterAlgo {
 			  EGPositionFormula,			  
 			  PFPositionCalc,
 			  kNotDefined };
-
+  
   /// constructor
   PFClusterAlgo();
 
@@ -79,12 +78,14 @@ class PFClusterAlgo {
   
   /// perform clustering
   void doClustering( const reco::PFRecHitCollection& rechits );
-  void doClustering( const reco::PFRecHitCollection& rechits, const std::vector<bool> & mask );
+  void doClustering( const reco::PFRecHitCollection& rechits, 
+		     const std::vector<bool> & mask );
 
   /// perform clustering in full framework
-  void doClustering( const PFRecHitHandle& rechitsHandle );
-  void doClustering( const PFRecHitHandle& rechitsHandle, const std::vector<bool> & mask );
-  
+  void doClustering( const PFRecHitHandle& rechitsHandle );  
+  void doClustering( const PFRecHitHandle& rechitsHandle, 
+		     const std::vector<bool> & mask );
+    
   /// setters -------------------------------------------------------
   
   /// set barrel threshold
@@ -220,7 +221,7 @@ class PFClusterAlgo {
   /// \return cleaned rechits
   std::auto_ptr< std::vector< reco::PFRecHit > >& rechitsCleaned()  
     {return pfRecHitsCleaned_;}
-
+  
   /// \return threshold, seed threshold, (gaussian width, p1 ??)
   /// for a given zone (endcap, barrel, VFCAL ??)
 
@@ -255,7 +256,7 @@ class PFClusterAlgo {
 
  private:
   /// perform clustering
-  void doClusteringWorker( const reco::PFRecHitCollection& rechits );
+  void doClusteringWorker( const reco::PFRecHitCollection& rechits );  
 
   /// Clean HCAL readout box noise and HPD discharge
   void cleanRBXAndHPD( const reco::PFRecHitCollection& rechits );
@@ -289,10 +290,10 @@ class PFClusterAlgo {
   void paint( unsigned rhi, unsigned color=1 );
 
   /// distance to a crack in the ECAL barrel in eta and phi direction
-  std::pair<double,double> dCrack(double phi, double eta);
-  
+  std::pair<double,double> dCrack(double phi, double eta);  
 
   PFRecHitHandle           rechitsHandle_;   
+
   // for E\gamma Position calc
   std::auto_ptr<SortedPFRecHitCollection> sortedRecHits_; 
 
@@ -328,8 +329,8 @@ class PFClusterAlgo {
   std::auto_ptr< std::vector<reco::PFCluster> > pfClusters_;
   
   /// particle flow rechits cleaned
-  std::auto_ptr< std::vector<reco::PFRecHit> > pfRecHitsCleaned_;
-  
+  std::auto_ptr< std::vector<reco::PFRecHit> > pfRecHitsCleaned_;  
+
   ///  barrel threshold
   double threshBarrel_;
   double threshPtBarrel_;
