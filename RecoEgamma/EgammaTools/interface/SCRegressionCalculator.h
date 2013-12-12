@@ -43,8 +43,10 @@ SCRegressionCalculator(const edm::ParameterSet& conf) :
   var_calc.reset(new VarCalc());
   eb_corr_name = conf.getParameter<std::string>("regressionKeyEB");
   ee_corr_name = conf.getParameter<std::string>("regressionKeyEE");
-  eb_err_name = conf.getParameter<std::string>("uncertaintyKeyEB");
-  ee_err_name = conf.getParameter<std::string>("uncertaintyKeyEE");
+  if( conf.existsAs<std::string>("uncertaintyKeyEB") )
+    eb_err_name = conf.getParameter<std::string>("uncertaintyKeyEB");
+  if( conf.existsAs<std::string>("uncertaintyKeyEE") )
+    ee_err_name = conf.getParameter<std::string>("uncertaintyKeyEE");
   
 }
 
@@ -72,13 +74,12 @@ float SCRegressionCalculator<VarCalc>::
 getCorrection(const reco::SuperCluster& sc) const {
   std::vector<float> inputs;
   var_calc->set(sc,inputs);
-  std::cout <<  sc.seed()->seed().subdetId()  << std::endl;
   switch( sc.seed()->seed().subdetId() ) {
   case EcalSubdetector::EcalBarrel:
-    return eb_corr->GetResponse(inputs.data())*sc.energy();
+    return eb_corr->GetResponse(inputs.data());
     break;
   case EcalSubdetector::EcalEndcap:
-    return ee_corr->GetResponse(inputs.data())*sc.energy();
+    return ee_corr->GetResponse(inputs.data());
     break;
   }
   return -1.0f;
@@ -89,15 +90,14 @@ std::pair<float,float> SCRegressionCalculator<VarCalc>::
 getCorrectionWithErrors(const reco::SuperCluster& sc) const {
   std::vector<float> inputs;
   var_calc->set(sc,inputs);
-  std::cout <<  sc.seed()->seed().subdetId()  << std::endl;
   switch( sc.seed()->seed().subdetId() ) {
   case EcalSubdetector::EcalBarrel:
-    return std::make_pair( eb_corr->GetResponse(inputs.data())*sc.energy(),
-			   eb_err->GetResponse(inputs.data())*sc.energy()   );
+    return std::make_pair( eb_corr->GetResponse(inputs.data()),
+			   eb_err->GetResponse(inputs.data())  );
     break;
   case EcalSubdetector::EcalEndcap:
-    return std::make_pair( ee_corr->GetResponse(inputs.data())*sc.energy(),
-			   ee_err->GetResponse(inputs.data())*sc.energy()   );
+    return std::make_pair( ee_corr->GetResponse(inputs.data()),
+			   ee_err->GetResponse(inputs.data())  );
     break;
   }
   return std::make_pair(-1.0f,-1.0f);
