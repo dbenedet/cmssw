@@ -111,8 +111,8 @@ bool PFEGammaFilters::passElectronSelection(const reco::GsfElectron & electron,
 
   }
 
-  // TO BE CHANGED by accessing from GsfElectron
-  if(pfcand.mva_e_pi() > ele_noniso_mva_) {
+  //  cout << " My OLD MVA " << pfcand.mva_e_pi() << " MyNEW MVA " << electron.mva() << endl;
+  if(electron.mva() > ele_noniso_mva_) {
     passEleSelection = true; 
   }
   
