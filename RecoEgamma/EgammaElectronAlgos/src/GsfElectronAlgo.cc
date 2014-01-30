@@ -1047,9 +1047,11 @@ void GsfElectronAlgo::setCutBasedPreselectionFlag( GsfElectron * ele, const reco
   // kind of seeding
   bool eg = ele->core()->ecalDrivenSeed() ;
   bool pf = ele->core()->trackerDrivenSeed() && !ele->core()->ecalDrivenSeed() ;
+  bool gedMode = generalData_->strategyCfg.gedElectronMode;
   if (eg&&pf) { throw cms::Exception("GsfElectronAlgo|BothEcalAndPureTrackerDriven")<<"An electron cannot be both egamma and purely pflow" ; }
   if ((!eg)&&(!pf)) { throw cms::Exception("GsfElectronAlgo|NeitherEcalNorPureTrackerDriven")<<"An electron cannot be neither egamma nor purely pflow" ; }
-  const CutsConfiguration * cfg = (&generalData_->cutsCfg) ;
+
+  const CutsConfiguration * cfg = ((eg||gedMode)?&generalData_->cutsCfg:&generalData_->cutsCfgPflow);
 
   // Et cut
   double etaValue = EleRelPoint(ele->superCluster()->position(),bs.position()).eta() ;
